@@ -20,25 +20,25 @@ def signup():
         data = request.get_json()
         
         if 'email' not in data or 'password' not in data:
-            return jsonify({"message": "Wrong request"}), 400
+            return jsonify({"msg": "Wrong request"}), 400
                     
         if not is_valid_email(data['email']):
-            return jsonify({"message": "Wrong email format in request"}), 400
+            return jsonify({"msg": "Wrong email format in request"}), 400
     
        
         hashed_password = generate_password_hash(data['password'], method='scrypt')
         new_user = User(email=data['email'], password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        return jsonify({"message": "User created!"}), 201
+        return jsonify({"msg": "User created!"}), 201
     
     except IntegrityError as e:
        # duplicate email
-        return jsonify({"message": "Email already exists"}), 409
+        return jsonify({"msg": "Email already exists"}), 409
         
     except Exception as e:
         print("other =>",e)
-        return jsonify({"message": "An error occurred"}), 500
+        return jsonify({"msg": "An error occurred"}), 500
 
 # Signin
 @app.route('/signin', methods=['POST'])
@@ -47,25 +47,25 @@ def signin():
         data = request.get_json()
         
         if 'email' not in data or 'password' not in data:
-            return jsonify({"message": "Wrong request"}), 400
+            return jsonify({"msg": "Wrong request"}), 400
         
         if not is_valid_email(data['email']):
-            return jsonify({"message": "Wrong email format in request"}), 400
+            return jsonify({"msg": "Wrong email format in request"}), 400
         
         user = User.query.filter_by(email=data['email']).first()
         
         if not user:
-            return jsonify({"message": "No user with this email"}), 401
+            return jsonify({"msg": "No user with this email"}), 401
         
         if not user or not check_password_hash(user.password, data['password']):
-            return jsonify({"message": "Wrong password!"}), 401
-        
+            return jsonify({"msg": "Wrong password!"}), 401
+        # access_token
         access_token = create_access_token(identity=user.email)
         return jsonify({"access_token": access_token})
     
     except Exception as e:
         print("errors=>", e)
-        return jsonify({"message": "An error occurred"}), 500
+        return jsonify({"msg": "An error occurred"}), 500
 
 # All users
 @app.route('/users', methods=['GET'])
@@ -79,7 +79,7 @@ def get_users():
         return jsonify({"message": "An error occurred"}), 500
     
 # Clear User 
-@app.route('/delete-user', methods=['POST'])
+@app.route('/users/delete-user', methods=['POST'])
 def deleteuser():
     try:
         data = request.get_json()
@@ -111,8 +111,63 @@ def deleteuser():
         print("errors=>", e)
         return jsonify({"message": "An error occurred"}), 500
 
+# get user info (profile) by email
+@app.route('/users/user/<string:email>', methods=['GET'])
+def get_user_info_and_organizations(email):
+    try:
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            return jsonify({"msg": "Email not found"}), 404
+
+        organizations = Organization.query.join(OrganizationUser).filter(OrganizationUser.user_id == user.id).all()
+
+        user_info = {
+            "id": user.id,
+            "email": user.email,
+            "organizations": [org.name for org in organizations]
+        }
+
+        return jsonify(user_info), 200
+
+    except Exception as e:
+        return jsonify({"msg": "An error occurred"}), 500
+
+# update email
+@app.route('/users/user/update', methods=['PUT'])
+def update_user_email():
+    try:
+        old_email = request.json.get('email')
+        new_email = request.json.get('new_email')
+
+        if not old_email or not new_email:
+            return jsonify({"msg": "Email or new email not provided"}), 400
+        # check email s format
+        if not is_valid_email(old_email):
+            return jsonify({"msg": "Wrong email format in request"}), 400
+        if not is_valid_email(new_email):
+            return jsonify({"msg": "Wrong new email format in request"}), 400
+        
+        user = User.query.filter_by(email=old_email).first()
+
+        if not user:
+            return jsonify({"message": "Email not found"}), 404
+
+        # Check if the new email already exists in the database
+        existing_user = User.query.filter_by(email=new_email).first()
+        if existing_user:
+            return jsonify({"msg": "New email already exists in the database"}), 409
+
+        user.email = new_email
+        db.session.commit()
+
+        return jsonify({"email": new_email}), 200
+
+    except Exception as e:
+        return jsonify({"msg": "An error occurred"}), 500
+
 # Organizations management
-# Signup
+# Create org
 @app.route('/create-org', methods=['POST'])
 def create_org():
     try:
@@ -137,13 +192,34 @@ def create_org():
     except Exception as e:
         print("other =>",e)
         return jsonify({"message": "An error occurred"}), 500
+# Delete Organization
+@app.route('/delete-org', methods=['DELETE'])
+def delete_organization_by_name():
+    try:
+        data = request.get_json()
 
+        if 'name' not in data:
+            return jsonify({"message": "Organization name not provided"}), 400
+
+        organization = Organization.query.filter_by(name=data['name']).first()
+
+        if not organization:
+            return jsonify({"message": "Organization not found"}), 404
+
+        db.session.delete(organization)
+        db.session.commit()
+
+        return jsonify({"message": "Organization deleted successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"message": "An error occurred"}), 500
+    
 # All Organizations
 @app.route('/organizations', methods=['GET'])
 def get_organizations():
     try:
         organizations = Organization.query.all()
-        org_list = [{'id': org.id, 'name': org.name} for org in organizations]
+        org_list = [org.name for org in organizations]
         return jsonify({"organizations": org_list}), 200
     
     except Exception as e:
@@ -210,7 +286,7 @@ def delete_user_from_org():
     except Exception as e:
         return jsonify({"message": "An error occurred"}), 500
 
-# 
+# get emails for org
 @app.route('/get-users-by-org', methods=['GET'])
 def get_emails_by_organization():
     try:

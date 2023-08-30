@@ -1,23 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+// dark mode
+import CssBaseline from '@mui/material/CssBaseline'
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useState, useContext, useMemo, useEffect, createContext  } from "react";
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Routes, Route } from 'react-router-dom';
+
+//components & pages
+import Layout from 'pages/layout';
+import Home from './components/Home';
+import SignIn from 'pages/signin';
+import SignUp from 'pages/signup';
+import Settings from 'pages/settings';
+import Profile from 'pages/profile';
+
+export const AppContext = createContext(null);
 
 function App() {
+  // theme 
+  const mode = useSelector((state) => state.global.mode);
+  const theme = useMemo(()=> createTheme({
+    palette: {
+      mode,
+    },
+  }), 
+  [mode]);
+
+  //user
+  const [token, setToken] =  useState(null);
+  const [isLogin, setIsLogin] =  useState(false);
+  const [userinfo, setUserInfo] = useState("");
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <AppContext.Provider value ={{ token, setToken, isLogin, setIsLogin, userinfo, setUserInfo }}>
+        <ThemeProvider theme = {theme}>
+          <CssBaseline /> 
+          <Routes>
+            <Route element={<Layout/>}>
+              {isLogin ? (<Route path='/' element={<Navigate to="/settings" replace/>}/>)
+              :(<Route path='/' element={<Home title="Homepage"/>}/>)
+              }
+              <Route path='/login' element={<SignIn title='SignIn'/>}/>
+              <Route path='/register' element={<SignUp title='SignUp'/>}/>
+              <Route path='/settings' element={<Settings title='Settings'/>}/>
+              <Route path='/profile' element={<Profile title='Profile'/>}/>
+            </Route>
+          </Routes>
+        </ThemeProvider>
+      </AppContext.Provider>
     </div>
   );
 }
