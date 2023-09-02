@@ -31,6 +31,7 @@ App offers a streamlined approach to business intelligence, focusing on essentia
 Many users find that their daily work only requires a handful of reports, typically around 5 to 10 views, along with standard filters and the ability to analyze data in detail using CSV downloads. Fine Dashboard caters to this specific need.
 
 By prioritizing simplicity and efficiency, App empowers users with curated views and straightforward features, ensuring they can access the insights they need without unnecessary complexity.
+![Description](other/Screen1.jpg)
 
 ## Data Identification
 
