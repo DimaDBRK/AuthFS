@@ -1,9 +1,7 @@
 # Full Stack Developer Assignment
 ![Logo](other/Auth.jpg)
 
-This application aims to augment a basic authentication system with advanced features that allow users to create organizations and invite other registered users to join these organizations. It prioritizes user experience by providing clear feedback messages and efficient frontend routing through React-Router.
-
-By enhancing the authentication system with these features, the app aims to provide a secure and user-friendly environment for creating and managing organizations, fostering collaboration and efficient user interaction.
+This application aims to augment a basic authentication system with advanced features that allow users to create organizations and invite other registered users to join these organizations. 
 
 The app's technology stack comprises:
 - Frontend: React and Material UI
@@ -27,18 +25,16 @@ The app's technology stack comprises:
 
 ## Description
 
-App offers a streamlined approach to business intelligence, focusing on essential functionalities without the burden of costly licenses. While established BI systems like Tableau, Power BI or Fine BI provide extensive data analytics capabilities, they often come at a significant financial expense.
+App prioritizes user experience by providing clear feedback messages and efficient frontend routing through React-Router.
 
-Many users find that their daily work only requires a handful of reports, typically around 5 to 10 views, along with standard filters and the ability to analyze data in detail using CSV downloads. Fine Dashboard caters to this specific need.
-
-By prioritizing simplicity and efficiency, App empowers users with curated views and straightforward features, ensuring they can access the insights they need without unnecessary complexity.
+By enhancing the authentication system with these features, the app aims to provide a secure and user-friendly environment for creating and managing organizations, fostering collaboration and efficient user interaction.
 ![Description](other/Screen1.jpg)
 
 
 ## Database
 
-ElephantSQL automates every part of setup and running of PostgreSQL clusters.
-ref: backend\app\models.py
+PostgreSQL.
+Models ref: backend\app\models.py
 There are Tables:
 
 User - includes user information
@@ -62,32 +58,29 @@ OrganizationUser - Users who are affiliated with an organization. One User can b
 ## Backend and API
 
 Flask server.
+Models ref: backend\app\routes.py
 List of API’s:
 User
-* post /users/register - register
-* post users//users/login - logout
-* pos users//logout - logout
-* get users/users -  protected, all users
-* get users/user/:user_id - get User Info By Id
-* put users/users/user/:user_id -  protected, update User Info By Id
-* post users/user/deleteprofile - protected, delete user profile
+* post /signup - register
+* post /signin - login
+* get /users -  all users info
+* post /users/delete-user - delete user (by email)
+* get /users/user/<string:email> - get User Info (by email)
+* put /users/user/update -  protected, update User Info (by email)
+
 
 Tokens and Auth
-* get /verify 
+* get /verify - protected route to check token for Auth component in React
 
 Organization management
-* post wbapi/updatedb -  protected, refresh - update data from World Bank API
-* get wbapi/data - get all data (flat table)
-* get wbapi/datachart - get data for Chart in special format, for specific data code
-* get wbapi/geography - get data in geography format;
-* get wbapi/datapages - get data with server side pagination (Pages format);
-* get wbapi/reports -  get reports info
-* get wbapi/allusersreports - get al lusers reports, including all reports and info;
-* post  wbapi/allusersreports -  protected, insert User Report (Add button)
-* post  wbapi/deleteuserreport -  protected, delete User Report (Remove button);
-* get wbapi/alluserreportsisdispaly/:user_id - all User Reportsis Display
-* post  wbapi/cornjobdata - start/stop cron Job Data collection or clear table;
-* get  wbapi/cornjobdata - live Data 
+* post /create-org - create new organization
+* deleted /delete-org - delete organization (by name)
+* get /organizations - all organizations info
+* post //get-org-by-author - PROTECTED, only organizations info created by user = author
+* post /add-users-to-org - add user to organization (and check if this user don't belong to this organization)
+* post /delete-user-from-org - delete user from organization (by email and organization name)
+* get /get-users-by-org - get users = emails for this organization
+
 
 ## Frontend
 
