@@ -114,6 +114,7 @@ Protected Route is - /settings.
 On server side - /get-org-by-author, it could be tested by visiting User page.
 
 In Profile it is possible to test Aut system - check token, delete token and get new one with redirection to sign in page and back.
+
 ![Profile](other/Profile.jpg)
 
 On Logout token deleted.
