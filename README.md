@@ -70,13 +70,13 @@ User
 
 
 Tokens and Auth
-* get /verify - protected route to check token for Auth component in React
+* get /verify - PROTECTED route to check token for Auth component in React
 
 Organization management
 * post /create-org - create new organization
 * deleted /delete-org - delete organization (by name)
 * get /organizations - all organizations info
-* post //get-org-by-author - PROTECTED, only organizations info created by user = author
+* post /get-org-by-author - PROTECTED, only organizations info created by user = author
 * post /add-users-to-org - add user to organization (and check if this user don't belong to this organization)
 * post /delete-user-from-org - delete user from organization (by email and organization name)
 * get /get-users-by-org - get users = emails for this organization
@@ -86,44 +86,41 @@ Organization management
 
 React frontend:
 Material UI is employed to design and structure the application's pages.
-Dark and Light themes
-
-Data Visualization: 
-Nivo (https://nivo.rocks/) and Recharts (https://recharts.org/) charting libraries have been utilized to achieve a refined and sophisticated appearance for the dashboard.
-
-Filtering of data has been implemented both on the server and in the frontend.
-
-The combination of MUI GridDataGrid and GridToolbar facilitates efficient management of server-side pagination and data export to files.
+Dark and Light themes enhance user experience.
 
 
-Users have the capability to save preferences and manage their profiles, encompassing actions such as updating their username, deleting their profile, as well as adding and removing reports (views).
+Users have the capability to save preferences and manage their profiles, encompassing actions such as updating their email, deleting their profile, as well as adding new Organizations.
+
+![Organization](other/Organizationmanagement.jpg)
+On the Settings page, admins have organization management capabilities, allowing them to create and delete organizations, as well as include and remove users from them.
 
 Pages and main components.
-![Dashboard](dashboard.jpg)
-Side bar includes:
-* Dashboard - cards of reports
-* My reports - dynamically updated list of user reports
-* Settings - Reports management (add and remove from My reports list) and Profile
-* Developer settings - additional features
 
+![Organization](other/Nav.jpg)
 Nav bar:
-* Button to open and close Side bar
-* Dashboard button
+* User - 
+* Settings - 
 * Switch themes button
-* User Name and Role info
-* Log out and Profile in additional menu
+* User Email and Avatar
+* Log out and User Profile in additional menu
 
 ## Authentication
 ![Signin](other/Signin.jpg)
-Token-based authentication employs two distinct tokens: the access token, stored in cookies with a short lifespan, and the refresh token, stored in both a dedicated database table and local storage, featuring a prolonged lifespan. A dedicated API facilitates token verification and updates upon the validation of the refresh token. JSON Web Token (JWT) serves as the foundation, utilizing JSON to craft access tokens, thereby enabling the utilization of application or API resources.
+Token-based authentication employs access token, stored in Frontend app memory and the same token in  stored cookies for future Auth system scalability. Life time of token could be changed in config.py (JWT_ACCESS_TOKEN_EXPIRES). By default = 5 min. 
+A dedicated API facilitates token verification and updates token in every request. JSON Web Token (JWT) serves as the foundation, utilizing JSON to craft access tokens, thereby enabling the utilization of application or API resources.
 
 Furthermore, the implementation of Protected Routes within React Router ensures that authorized access is maintained.
+Protected Route is - /settings.
+
+On server side - /get-org-by-author, it could be tested by visiting User page.
+
+In Profile it is possible to test Aut system - check token, delete token and get new one with redirection to sign in page and back.
+![Profile](other/Profile.jpg)
+
+On Logout token deleted.
 
 ### User Roles and Permissions:
-The system delineates between two distinct user roles: User and Developer.
-Developers are endowed with specialized access privileges, encompassing features such as Database management on the Developer page, access to a comprehensive users list, and the capability to delete refresh tokens.
-On the other hand, users are allocated restricted access, limited solely to the exploration of reports.
-This role-based structure ensures a controlled and secure user experience.
+The system has only one User role.
 
 
 ## Future Scalability
@@ -131,39 +128,42 @@ This role-based structure ensures a controlled and secure user experience.
 The application is designed with a modular structure, providing the potential for seamless integration of additional features and data sources in the future.
 
 ## Installation
-1. .env file for server includes:
-- PORT => by server side
-- DB_HOST=...
-- DB_PORT=...
-- DB_USER=...
-- DB_NAME=...
-- DB_PASS=...
-- ACCESS_TOKEN_SECRET=...
-- ACCESS_TOKEN_EXPIRES_IN=60
-- REFRESH_TOKEN_SECRET=...
-- REFRESH_TOKEN_EXPIRES_IN=300
+1. Backend
+  
+config.py - includes parameters
+  SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+  JWT_SECRET_KEY = os.environ.get('SECRET_KEY')
+  JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=5)  # token lifetime
+  SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+Create .env file with parameters:
+DATABASE_URL= example:  postgresql://username:password@localhost:5432/mydatabase
+SECRET_KEY= here your key
 
-2. Clone the repository:
+1. Clone the repository:
 
 ```bash
 git clone REPO NAME
 cd yourproject
 
-2. Install the dependencies for the Node.js server:
-cd server
-npm install
+2. Install Backend Flask server:
+Install Python: Flask is a Python framework, so you need to have Python installed. You can download Python from the official website: https://www.python.org/downloads/
 
-Start the Node.js server:
-npm start
+Create a Virtual Environment (Optional): It's recommended to create a virtual environment to isolate your project dependencies. You can do this using the venv module that comes with Python. Open your terminal and run: python -m venv venv
+
+Activate the virtual environment:
+On Windows: venv\Scripts\activate
+On macOS and Linux: source venv/bin/activate
+
+Run the Flask application - app.py
 
 3.Install the dependencies for the React frontend:
-cd ../client
+cd ./frontend
 npm install
 
 Start the React development server:
 npm start
 
-4. The Node.js server will run and the React development server will run on http://localhost:3000. You can access the application by opening your web browser and navigating to http://localhost:3000.
+4. The Flask server will run on http://localhost:5000 and the React development server will run on http://localhost:3000. You can access the application by opening your web browser and navigating to http://localhost:3000.
 
 
