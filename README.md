@@ -1,8 +1,11 @@
 # Full Stack Developer Assignment
 ![Logo](other/Auth.jpg)
 
-The application presents a diverse range of graphs derived from the data stored within the database. A robust authentication system is integrated to guarantee secure user entry to both data and functionalities. The Full Stack Fine Dashboard App exhibits data through dynamic charts and provides comprehensive user profile administration. The app's technology stack comprises:
+This application aims to augment a basic authentication system with advanced features that allow users to create organizations and invite other registered users to join these organizations. It prioritizes user experience by providing clear feedback messages and efficient frontend routing through React-Router.
 
+By enhancing the authentication system with these features, the app aims to provide a secure and user-friendly environment for creating and managing organizations, fostering collaboration and efficient user interaction.
+
+The app's technology stack comprises:
 - Frontend: React and Material UI
 - Backend: Flask
 - Database: PostgreSQL
