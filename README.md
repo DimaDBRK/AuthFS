@@ -14,8 +14,6 @@ The application presents a diverse range of graphs derived from the data stored 
 - [Full Stack Developer Assignment](#full-stack-developer-assignment)
   - [Table of Contents](#table-of-contents)
   - [Description](#description)
-  - [Data Identification](#data-identification)
-    - [Data Collection \& Pre-processing:](#data-collection--pre-processing)
   - [Database](#database)
   - [Backend and API](#backend-and-api)
   - [Frontend](#frontend)
@@ -33,104 +31,34 @@ Many users find that their daily work only requires a handful of reports, typica
 By prioritizing simplicity and efficiency, App empowers users with curated views and straightforward features, ensuring they can access the insights they need without unnecessary complexity.
 ![Description](other/Screen1.jpg)
 
-## Data Identification
-
-World Bank  API has been selected for data collection : https://datahelpdesk.worldbank.org/knowledgebase/articles/889392-api-documentation
-The World Bank data consists of demographic and other statistical data related to Population, Employment, GDP, Energy Consumption, etc. for different the countries from the year 1960 to 2022. These categories are called indicators and are each defined by a code.
-Example of  indicators:
-* SP.POP.TOTL - Total Population
-* SP.DYN.CBRT.IN Birth Rate
-* SE.COM.DURS - Compulsory Education Duration
-* NY.GDP.MKTP.CD - GDP in USD
-
-The following countries have been chosen for data collection:
-* US - United States of America
-* IN - India
-* CN - China
-* JP - Japan
-* CA - Canada
-* GB - Great Britain
-* ZA - South Africa
-
-The base API URL is http://api.worldbank.org/v2/ and is followed by the country code and indicator code to obtain the data for each year. No authentication is required to use the API.
-
-### Data Collection & Pre-processing: 
-The aforementioned data is meticulously gathered through a loop of async API calls, subsequently subjected to preprocessing and parsing procedures, and stored within a dedicated table. This meticulous process ensures the organization and accessibility of the collected information for efficient utilization.
-
-
-For live update data used Binance free API:  https://data.binance.com/api/v3/ticker/24hr
-A limitation is imposed on the frequency of API requests, allowing for testing at a rate of one request every five seconds.
 
 ## Database
 
 ElephantSQL automates every part of setup and running of PostgreSQL clusters.
+ref: backend\app\models.py
 There are Tables:
 
-fineusers - user unformation
-> create table fineusers ( 
-user_id serial not null primary key, 
-name varchar(255), 
-email varchar(255) not null unique,
-isdeveloper boolean default false, 
-create_date date not null default current_date, 
-last_login date not null )
+User - includes user information
+> class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(1000), nullable=False)
 
-finelogins  - password info
-> create table finelogins (
-login_id serial not null primary key,
-email varchar(150) not null REFERENCES fineusers (email ) ON DELETE CASCADE,
-password varchar(150) not null
-)
+Organization - name and the user who initiated its creation.
+> class Organization(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
 
-countrydata  - World Bank Info
-> create table countrydata (
-id serial not null primary key,
-total_population real,
-birth_rate real,
-death_rate real,
-compulsory_education real,
-employment_industry real,
-employment_agriculture real,
-unemployment real,
-gdp_usd real,
-national_income_capita real,
-net_income_abroad real,
-agriculture_value real,
-electric_power_consumption_capita real,
-renewable_energy_consumption real,
-fossil_fuel_consumption real,
-year smallint,
-country varchar(100),
-)
-
-reports - list of available reports (views)
-> create table reports( 
-report_id serial not null primary key,
-report varchar(255),
-title varchar(255),
-short varchar(1000),
-description varchar(1000),
-link varchar(255)
-)
-
-userstokens - refresh tokens for users
-> create table userstokens (
-id serial not null primary key,
-user_id integer REFERENCES fineusers (user_id) ON DELETE CASCADE,
-refresh_token varchar(1000),
-device_id varchar(1000)
-)
-
-livedata - live data for update
-> create table livedata (
-id serial not null primary key,
-x bigint,
-y real
-)
+OrganizationUser - Users who are affiliated with an organization. One User can belong to several organizations.
+> class OrganizationUser(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    organization_id = db.Column(db.Integer, db.ForeignKey('organization.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
 
 ## Backend and API
 
-Node.js server.
+Flask server.
 List of API’s:
 User
 * post /users/register - register
@@ -142,11 +70,9 @@ User
 * post users/user/deleteprofile - protected, delete user profile
 
 Tokens and Auth
-* get  users/verify 
-* post users/refresh
-* post users/user/deleterefreshtoken -  protected, delete refresh tokens for user by id
+* get /verify 
 
-Data management
+Organization management
 * post wbapi/updatedb -  protected, refresh - update data from World Bank API
 * get wbapi/data - get all data (flat table)
 * get wbapi/datachart - get data for Chart in special format, for specific data code
