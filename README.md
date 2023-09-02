@@ -19,7 +19,6 @@ The app's technology stack comprises:
   - [Backend and API](#backend-and-api)
   - [Frontend](#frontend)
   - [Authentication](#authentication)
-    - [User Roles and Permissions:](#user-roles-and-permissions)
   - [Future Scalability](#future-scalability)
   - [Installation](#installation)
 
@@ -98,8 +97,8 @@ Pages and main components.
 
 ![Organization](other/Nav.jpg)
 Nav bar:
-* User - 
-* Settings - 
+* User 
+* Settings 
 * Switch themes button
 * User Email and Avatar
 * Log out and User Profile in additional menu
@@ -119,7 +118,7 @@ In Profile it is possible to test Aut system - check token, delete token and get
 
 On Logout token deleted.
 
-### User Roles and Permissions:
+User Roles and Permissions:
 The system has only one User role.
 
 
@@ -128,7 +127,8 @@ The system has only one User role.
 The application is designed with a modular structure, providing the potential for seamless integration of additional features and data sources in the future.
 
 ## Installation
-1. Backend
+Pay attention: 
+Backend
   
 config.py - includes parameters
   SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
@@ -139,6 +139,18 @@ config.py - includes parameters
 Create .env file with parameters:
 DATABASE_URL= example:  postgresql://username:password@localhost:5432/mydatabase
 SECRET_KEY= here your key
+
+Frontend:
+For correct cookies and requests Proxy set:
+in package.json:
+"proxy": "http://127.0.0.1:5000",
+
+If there is problem on MacOS:
+Mac OSX Monterey (12.x) and later currently uses ports 5000 and 7000 for its Control centre hence the issue.
+Try running your app from port other than 5000 and 7000
+Change port on Flask server:
+if __name__ == "__main__":
+    app.run(port=8000, debug=True)
 
 1. Clone the repository:
 
