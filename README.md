@@ -1,5 +1,5 @@
 # Full Stack Developer Assignment
-![Logo](logo.png)
+![Logo](other/Auth.jpg)
 
 The application presents a diverse range of graphs derived from the data stored within the database. A robust authentication system is integrated to guarantee secure user entry to both data and functionalities. The Full Stack Fine Dashboard App exhibits data through dynamic charts and provides comprehensive user profile administration. The app's technology stack comprises:
 

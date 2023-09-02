@@ -157,22 +157,6 @@ const Settings = (props) => {
    
     }
 
-
-
-
-
-    useEffect(()=>{
-        // if (token) {
-        //     const payload = jwt_token(token);
-        //     console.log("payload=>", payload);
-        //     setEmail(payload.userinfo.email);
-        //     setId(payload.userinfo.user_id);
-        console.log("useEffect")
-        // }
-    },[]);
-
-
-
     return(
         <Box m="1.5rem 2.5rem">
             <Header title="ADMIN SETTINGS" subtitle="Organization Management" />
@@ -187,9 +171,9 @@ const Settings = (props) => {
                   onChange={(e) => {handleChangeOrganization(e); getUsersByOrg(e.target.value)}}
                 >
                   <MenuItem value=""><em>None</em></MenuItem>
-                  { orgList.length > 0 && (orgList.map(item => {
+                  { orgList.length > 0 && (orgList.map((item, index) => {
                     return (
-                      <MenuItem value={item}>{item}</MenuItem>
+                      <MenuItem value={item} key={index}>{item}</MenuItem>
                     );
                     })
                   )}

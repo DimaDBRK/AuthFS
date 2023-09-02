@@ -275,10 +275,7 @@ const User = (props) => {
                 )}
               {/* </Box>           */}
             </Box>
-           
           </Box>
-
-   
     )
 }
 

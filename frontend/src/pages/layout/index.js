@@ -11,15 +11,9 @@ const Layout = () => {
     const [msg, setMsg] = useState('');
     // media query desktop - true
     const isNonMobile = useMediaQuery("(min-width: 600px)");
-      
-    //for test User info
-    // const user = {name: "Albert", isDeveloper: true }
     const { isLogin, setIsLogin } = useContext(AppContext);
     const { token, setToken } = useContext(AppContext);
-    // const { refreshToken, setRefreshToken } = useContext(AppContext);
     const { userinfo, setUserInfo } = useContext(AppContext);
-   
-    
 
 // fot access_token
     useEffect(()=>{
@@ -31,35 +25,6 @@ const Layout = () => {
         } 
       }, [token])
       
-
-    // useEffect(()=>{
-         
-    //     if (token) {
-    //         const payload = jwt_token(token);
-    //         const info = payload.userinfo;
-    //         setUserInfo(info);
-    //         setIsDeveloper(info.isdeveloper);
-    //         console.log("userinfo from token=>", info);
-    //     }  else if (refreshToken) {
-    //         const payload = jwt_token(refreshToken);
-    //         const info = payload.userinfo;
-    //         setIsLogin(true);
-    //         setUserInfo(info);
-    //         setIsDeveloper(info.isdeveloper);
-    //         getReportsNew(info.user_id);
-    //         console.log("userinfo from ref token=>", info);
-    //         setMsg("");
-           
-    //     }
-   
-    // },[token, refreshToken]);
-
-
-    // useEffect(()=>{
-    //     getReports();
-    //     console.log('res=>',reports);
-    //   }, [])
-      
       const getReportsNew = async (id) =>{
         console.log("user_id in get=>", userinfo.user_id)
       
@@ -67,7 +32,6 @@ const Layout = () => {
           const res = await axios.get(`/wbapi/alluserreportsisdispaly/${id}`);
           
           console.log('res=>',res.data);
-          // setReports(res.data);
           setMsg("");
            
         }catch (err) {

@@ -173,16 +173,8 @@ const Profile = (props) => {
 
     useEffect(()=>{
       userinfo && getUserInfoByEmail(userinfo);
-        // if (token) {
-        //     const payload = jwt_token(token);
-        //     console.log("payload=>", payload);
-        //     setEmail(payload.userinfo.email);
-        //     setId(payload.userinfo.user_id);
-        console.log("useEffect")
-        // }
+      console.log("useEffect")
     },[]);
-
-
 
     return(
         <Box m="1.5rem 2.5rem">
@@ -373,27 +365,21 @@ const Profile = (props) => {
                     sx={{ mt: 3, mb: 2 }}
                     onClick={()=>{setConfirmDelete(false); setPassword(""); setIsDeleteAlert(false)}}
                     >
-             Cancel
-            </Button>
+                  Cancel
+                </Button>
               </Grid>
-            )}
-          
-            <Button
-              
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              onClick={()=>deleteUserProfile()}
-            >
-              Delete account
-            </Button>
-         
+                )}
+        
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+                onClick={()=>deleteUserProfile()}
+              >
+                Delete account
+              </Button>
           </Box>          
-
         </Box>
-      
-                
-          
       </Box>
     )
 }
