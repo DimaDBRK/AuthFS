@@ -9,6 +9,7 @@ class User(db.Model):
 class Organization(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     
 class OrganizationUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)

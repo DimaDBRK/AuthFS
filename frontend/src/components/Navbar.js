@@ -70,10 +70,16 @@ const Navbar = ({
 
                 {/* Menu */}
                 {isLogin && (
+                    <Button  variant="h4" sx={{ my: 2, display: 'block' }} component={Link} to='/user' > 
+                        User
+                    </Button>
+                )} 
+                {isLogin && (
                     <Button  variant="h4" sx={{ my: 2, display: 'block' }} component={Link} to='/settings' > 
                         Settings
                     </Button>
                 )}  
+              
            </FlexBetween>
 
          {/* Right block */}

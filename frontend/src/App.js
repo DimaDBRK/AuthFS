@@ -13,6 +13,8 @@ import SignIn from 'pages/signin';
 import SignUp from 'pages/signup';
 import Settings from 'pages/settings';
 import Profile from 'pages/profile';
+import User from 'pages/user';
+import Auth from './auth/Auth';
 
 export const AppContext = createContext(null);
 
@@ -38,13 +40,20 @@ function App() {
           <CssBaseline /> 
           <Routes>
             <Route element={<Layout/>}>
-              {isLogin ? (<Route path='/' element={<Navigate to="/settings" replace/>}/>)
+              {isLogin ? (<Route path='/' element={<Navigate to="/user" replace/>}/>)
               :(<Route path='/' element={<Home title="Homepage"/>}/>)
               }
               <Route path='/login' element={<SignIn title='SignIn'/>}/>
               <Route path='/register' element={<SignUp title='SignUp'/>}/>
-              <Route path='/settings' element={<Settings title='Settings'/>}/>
+              <Route path='/settings' element={
+                <Auth>
+                  <Settings title='Settings'/>
+                </Auth>
+              }/>
               <Route path='/profile' element={<Profile title='Profile'/>}/>
+              <Route path='/user' element={
+                <User title='User'/>
+              }/>
             </Route>
           </Routes>
         </ThemeProvider>

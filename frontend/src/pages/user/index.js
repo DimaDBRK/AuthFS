@@ -12,7 +12,7 @@ import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import axios from "axios";
 
-const Settings = (props) => {
+const User = (props) => {
   // organization
   const [org, setOrganization] = useState("");
   const [orgList, setOrgList] = useState([]);
@@ -45,13 +45,20 @@ const Settings = (props) => {
         getOrganizations();
         // console.log('res=>',reports);
       }, [])
-      
+    
+    // request to protected route
     const getOrganizations = async () =>{
+      // set the Authorization header - token
       try {
-        const res = await axios.get(`/organizations`);
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const res = await axios.post(`/get-org-by-author`,{"email": userinfo}, { headers });
         console.log('res=>',res.data.organizations);
         setOrgList(res.data.organizations);
-        setMsg("");
+        setMsg(res.data.msg);
+        setToken(res.data.access_token);
+     
       } catch (err) {
         setMsg(err.response.data.msg);
         console.log(err.response.data.msg);
@@ -95,7 +102,8 @@ const Settings = (props) => {
             if (res.status === 200 || res.status === 201) {
                 console.log(res.data);
                 setMsg(res.data.msg);
-                setOrgList(res.data.organizations);
+                getOrganizations();
+                // setOrgList(res.data.organizations);
             }
         } catch (err) {
         console.log(err);
@@ -109,14 +117,11 @@ const Settings = (props) => {
       setMsg("");
       setNewOrg(newName);
       if (newName != "" && newName.trim().length < 80) {
-        
         setIsAddNewButton(false)
       } else {
         setIsAddNewButton(true)
         setMsg("Wrong or empty new organization name!");
-
       }
-      
     }
 
     // open organization management
@@ -137,30 +142,6 @@ const Settings = (props) => {
       }
     }
 
-    const deleteOrganization = async (event) => {
-      console.log("Button delete, org name=>", org);
-        if (confirmDelete) {
-          // -> Delete Org
-          try {
-                const res = await axios.delete(`/delete-org?name=${org}`);
-                if (res.status === 200) {
-                    console.log(res.data);
-                    setMsg(res.data.msg);// // clear and exit
-                    setOrgList(res.data.organizations);
-                    setUsersData([])
-                }
-            } catch (err) {
-            console.log(err);
-            setMsg(err.response.data.msg); // to show in the same part
-            }
-        } else { return}
-   
-    }
-
-
-
-
-
     useEffect(()=>{
         // if (token) {
         //     const payload = jwt_token(token);
@@ -175,9 +156,17 @@ const Settings = (props) => {
 
     return(
         <Box m="1.5rem 2.5rem">
-            <Header title="ADMIN SETTINGS" subtitle="Organization Management" />
+            <Header title="USER" subtitle="Organization settings" />
             { msg != "" && <Alert severity="warning">{msg}</Alert>}
             <Box>
+              <Typography variant="h7">
+              Functions:
+              <ul>
+                <li>Add registered users to organization using email addresses.</li>
+                <li>View the list of users in the organization.</li>
+                <li>Create a new organization with a unique name.</li>
+              </ul>
+              </Typography>
               <FormControl sx={{ mt: "1rem", minWidth: 150 }}>
                 <InputLabel id="select-organization">Organization</InputLabel>
                 <Select
@@ -197,14 +186,6 @@ const Settings = (props) => {
                 <FormHelperText>Select Organization</FormHelperText>              
               </FormControl>
               
-              <Button
-              variant="contained"
-              sx={{ mt: 3, mb: 2, mx: 3}}
-              onClick={()=>{ getUsersByOrg(org) }}
-              >
-                Update info
-              </Button>
-
             </Box>
             <Box sx={{
               marginTop: 0,
@@ -223,7 +204,7 @@ const Settings = (props) => {
             </Box>
 
             {/* User table */}
-            <UsersGrid data = {usersData} isUserInOrg={true} org ={org} setMsg={setMsg} usersData={usersData} setUsersData={setUsersData} />
+            <UsersGrid data = {usersData} isUserInOrg={true} org ={org} setMsg={setMsg} usersData={usersData} setUsersData={setUsersData} title={title}/>
             {/* Manage organizations */}
 
             <Box sx={{
@@ -240,11 +221,11 @@ const Settings = (props) => {
               <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                 <LockOpenOutlinedIcon />
               </Avatar>
-              <Box component="form" noValidate sx={{ mt: 3 }}>
+              {/* <Box component="form" noValidate sx={{ mt: 3 }}> */}
               { isDeleteAlert && (
                 <Grid item xs={12}>
                   <Typography variant="h5">
-                    Manage organization 
+                    Add organization 
                     <Button
                       // fullWidth
                       variant="contained"
@@ -256,28 +237,8 @@ const Settings = (props) => {
                     </Button>
                   </Typography>
                  
-                  <Alert severity="warning">Select organization to delete!</Alert>
-                  <FormControlLabel 
-                    onChange ={(e) => {const res = !confirmDelete; setConfirmDelete(res); checkDeleteButton(res)}}
-                    control={
-                    <Checkbox value="on" checked={confirmDelete} />
-                    }
-                    label="I would like to delete this organization"
-                  />
-                
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                    onClick={ () => deleteOrganization() }
-                    disabled={isDeleteButton}
-                  >
-                    Delete organization
-                  </Button>
                   {/* new organization */}
-                  <Typography variant="h5" sx={{ mt: 1, mb: 1 }}>
-                    Add organization to list
-                  </Typography>
+             
               
                     <TextField
                       fullWidth
@@ -309,10 +270,10 @@ const Settings = (props) => {
                   sx={{ mt: 3, mb: 2 }}
                   onClick={ () => openOrganizationManagement() }
                 >
-                  Manage organization
+                  Add new organization
                 </Button>
                 )}
-              </Box>          
+              {/* </Box>           */}
             </Box>
            
           </Box>
@@ -321,4 +282,4 @@ const Settings = (props) => {
     )
 }
 
-export default Settings;
+export default User;

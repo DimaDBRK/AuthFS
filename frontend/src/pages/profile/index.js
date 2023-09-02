@@ -3,7 +3,7 @@ import { AppContext } from "App";
 import { Alert, Grid, Avatar, TextField, Box, FormControlLabel, Checkbox, Button, Typography, useTheme } from "@mui/material";
 import Header from "components/Header";
 // import Auth from "auth/Auth";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined';
 
@@ -15,12 +15,15 @@ const Profile = (props) => {
     const { isLogin, setIsLogin, userinfo, setUserInfo, token, setToken } = useContext(AppContext);
     const [id, setId] = useState(null);
     const [userOrg, setUserOrg] = useState([]);
+    const [orgList, setOrgList] = useState([]); // created by user
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isDeleteAlert, setIsDeleteAlert] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [isButton, setIsButton] = useState(true);
-
+    const [redirect, setRedirect] = useState(null);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     // regular exp for email
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -29,13 +32,32 @@ const Profile = (props) => {
     const title = props.title;
     useEffect(() => {
       document.title = title;
-
     },[]);
    
+
     //theme
     const theme = useTheme();
-    const navigate = useNavigate();
+   
     
+    // get organization list
+    useEffect(()=>{
+      getOrganizations();
+      // console.log('res=>',reports);
+    }, [])
+
+    const getOrganizations = async () =>{
+    try {
+      const res = await axios.post(`/get-org-by-author`,{"email": userinfo});
+      console.log('res=>',res.data.organizations);
+      setOrgList(res.data.organizations);
+      setMsg(res.data.msg);
+    } catch (err) {
+      setMsg(err.response.data.msg);
+      console.log(err.response.data.msg);
+    }
+    }
+
+
     // requests
     const getUserInfoByEmail = async (email) => {
  
@@ -57,6 +79,35 @@ const Profile = (props) => {
       setMsg(err.response.data.msg); // to show in the same part
       }
     }
+
+
+    // verify token
+    const verifyToken = async (e) => {
+      // e.preventDefault();
+      setMsg("");
+      // -> Verify
+      try {
+        // set the Authorization header - token
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const res = await axios.get(`/verify`, { headers });
+        if (res.status === 200) {
+          console.log(res.data);
+          // store refresh token to local storage
+          // localStorage.setItem('refreshToken', res.data.refreshToken);
+          
+          setToken(res.data.access_token);
+          setMsg(res.data.msg);
+          setIsLogin(true);
+        }
+      } catch (err) {
+        console.log(err.response);
+        setMsg(err.response.data.msg); // to show in the same part
+      }
+    }
+    
+
 
     // change email
     const handleChangeEmail = (e) => {
@@ -171,11 +222,22 @@ const Profile = (props) => {
             {/* </Grid>
           </Grid> */}
             <Typography>
-              Organization: {
+              User's Affiliated Organizations: {
               userOrg.length > 0
               ? 
               <ul>
                   {userOrg.map((org, index) => (
+                  <li key={index}>{org}</li>
+                  ))}
+              </ul>
+              :"No"}
+            </Typography> 
+            <Typography>
+              Organizations Created by User: {
+              userOrg.length > 0
+              ? 
+              <ul>
+                  {orgList.map((org, index) => (
                   <li key={index}>{org}</li>
                   ))}
               </ul>
@@ -189,6 +251,48 @@ const Profile = (props) => {
             >
               Update Profile info from DB
             </Button>
+          {/* Check token */}
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOpenOutlinedIcon />
+          </Avatar>
+          
+          <Typography variant="h5" >
+            Access token
+          </Typography>
+          <Typography>
+            {token? token :"No token"}
+          </Typography>
+          
+          <Button
+            // fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            onClick={()=>{verifyToken()}}
+          >
+              Verify route request
+          </Button>
+          <Button
+            // fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            onClick={()=>{setToken(null)}}
+          >
+              Clear token
+          </Button>
+          <Button
+            // fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            onClick={()=>{
+              setIsLogin(false);
+              setToken(null);
+              navigate("/login", { state: { from: location }, replace: true }) 
+            }}
+          >
+              Login to get new token
+          </Button>
+
+
           {/* Change name */}
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOpenOutlinedIcon />
@@ -227,11 +331,8 @@ const Profile = (props) => {
             </Button>
             
           </Box>     
-   
-     
-        
            {/* Delete user */}
-           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOpenOutlinedIcon />
           </Avatar>
            <Box component="form" noValidate sx={{ mt: 3 }}>
@@ -276,7 +377,7 @@ const Profile = (props) => {
             </Button>
               </Grid>
             )}
-            {email != "demo@demo.com" ? (
+          
             <Button
               
               fullWidth
@@ -286,12 +387,7 @@ const Profile = (props) => {
             >
               Delete account
             </Button>
-            ) : (
-              <Typography>
-                    Register to use this functions
-              </Typography> 
-            )
-          }
+         
           </Box>          
 
         </Box>
