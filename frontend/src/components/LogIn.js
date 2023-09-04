@@ -131,6 +131,7 @@ const LogIn = (props) => {
               </Grid>
             </Grid>
             <Button
+              id="button-login"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}

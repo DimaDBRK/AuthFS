@@ -19,6 +19,7 @@ The app's technology stack comprises:
   - [Backend and API](#backend-and-api)
   - [Frontend](#frontend)
   - [Authentication](#authentication)
+  - [Tests](#tests)
   - [Future Scalability](#future-scalability)
   - [Installation](#installation)
 
@@ -127,6 +128,24 @@ On Logout token deleted.
 User Roles and Permissions:
 The system has only one User role.
 
+## Tests
+
+The tests encompass both backend and frontend automation test cases, implemented using Pytest. For the frontend, Selenium WebDriver is utilized.
+
+Ref: backed/tests
+
+>API
+- 19 tests 
+
+>Frontend
+- 2 tests
+
+How to start:
+1. in python virtual inv go cd dir to tests folder.
+2. run command: (py -m) pytest -v -s --html=report.html test_api.py
+3. Report will be in file: report.html (to open in browser)
+   
+![Report](other/Report.jpg)
 
 ## Future Scalability
 
