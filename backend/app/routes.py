@@ -83,7 +83,7 @@ def get_users():
         return jsonify({"users": user_list}), 200
     
     except Exception as e:
-        return jsonify({"message": "An error occurred"}), 500
+        return jsonify({"msg": "An error occurred"}), 500
     
 # Clear User 
 @app.route('/users/delete-user', methods=['POST'])
@@ -92,10 +92,11 @@ def deleteuser():
         data = request.get_json()
                 
         if 'email' not in data or 'password' not in data or 'command' not in data:
-            return jsonify({"message": "Wrong request"}), 400
+            return jsonify({"msg": "Wrong request"}), 400
         
+        print("command=>", data['command'])
         if data['command'] != 'deleteuser':
-            return jsonify({"message": "Wrong command"}), 400
+            return jsonify({"msg": "Wrong command"}), 400
         
         # if not is_valid_email(data['email']):
         #     return jsonify({"message": "Wrong email format in request"}), 400
@@ -103,20 +104,20 @@ def deleteuser():
         user = User.query.filter_by(email=data['email']).first()
         
         if not user:
-            return jsonify({"message": "No user with this email"}), 401
+            return jsonify({"msg": "No user with this email"}), 401
         
         if not user or not check_password_hash(user.password, data['password']):
-            return jsonify({"message": "Wrong password!"}), 401
+            return jsonify({"msg": "Wrong password!"}), 401
         
         # delete user
         db.session.delete(user)
         db.session.commit()
         
-        return jsonify({"message": "User deleted!"}), 200
+        return jsonify({"msg": "User deleted!"}), 200
     
     except Exception as e:
         print("errors=>", e)
-        return jsonify({"message": "An error occurred"}), 500
+        return jsonify({"msg": "An error occurred"}), 500
 
 # get user info (profile) by email
 @app.route('/users/user/<string:email>', methods=['GET'])
@@ -158,7 +159,7 @@ def update_user_email():
         user = User.query.filter_by(email=old_email).first()
 
         if not user:
-            return jsonify({"message": "Email not found"}), 404
+            return jsonify({"msg": "Email not found"}), 404
 
         # Check if the new email already exists in the database
         existing_user = User.query.filter_by(email=new_email).first()
@@ -436,6 +437,7 @@ def get_emails_by_organization():
 @app.route('/verify', methods=['GET'])
 @jwt_required()  # requires a valid JWT token
 def protected_route():
+    print("verify")
     try:
         token_user_email = get_jwt_identity()  # Get user email from the token
 
@@ -460,5 +462,16 @@ def protected_route():
         print("errors=>", e)
         return jsonify({"msg": "An error occurred"}), 500
         
-       
+    
+    # Test - to check if server works
+@app.route('/test', methods=['GET'])
+def test():
+    try:
+        # Create a response object
+        response = make_response(jsonify({"msg": "Test Ok"}))
+        return response
+    
+    except Exception as e:
+        print("errors=>", e)
+        return jsonify({"msg": "An error occurred"}), 500
 

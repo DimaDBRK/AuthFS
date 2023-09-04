@@ -44,54 +44,21 @@ const Auth = (props) => {
             // if 
             if  (e.response.status && [401, 403, 422].includes(e.response.status)) {
                 console.log("error:", e.response.status, "try refresh");
-                // try to refresh token
-
-            //     newRefreshToken()
-            //    .then(result => {
-            //     console.log("result refreshToken=>", result);
-            //     if (result) { 
-            //         console.log("token updated");
-            //         return setRedirect(true);;
-            //     }
-            //     else {
+     
                     setRedirect(false);
                     setIsLogin(false);
                     setToken(null);
                     navigate("/login", { state: { from: location }, replace: true }); //to dashboard 
-            //     }
-            //    });
+         
             } else {
             console.log("check Token false, redirect to login");
-            // setRedirect(false);
-            // setIsLogin(false);
-            // setToken(null);
-            // navigate("/login", { state: { from: location }, replace: true }); //to dashboard
+           
             }
 
         }
     }
 
 
-    // const refreshToken = async() => {
-    //     const refreshToken = localStorage.getItem("refreshToken")
-    //     if (!refreshToken) {
-    //         return false
-    //     } else {
-    //         // make post request to /refresh
-    //         try {
-    //             const res = await axios.post(`/users/refresh`,
-    //             {"refreshToken": refreshToken});
-    //             //test
-    //             if (res.status === 200) {
-    //                 return true;
-    //             } else {
-    //                 return false;
-    //             }
-    //         } catch(e) {
-    //             return false
-    //         }
-    //     }
-    // }
 
     console.log("redirect auth res:", redirect)
     return redirect ? props.children : <p>Problem with Auth</p>;

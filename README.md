@@ -46,13 +46,18 @@ Organization - name and the user who initiated its creation.
 > class Organization(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET DEFAULT'), nullable=True)
 
 OrganizationUser - Users who are affiliated with an organization. One User can belong to several organizations.
 > class OrganizationUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     organization_id = db.Column(db.Integer, db.ForeignKey('organization.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+
+Commands:
+flask db init
+flask db migrate -m "Users table"
+flask db upgrade
 
 ## Backend and API
 
