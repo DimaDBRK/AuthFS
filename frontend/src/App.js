@@ -14,6 +14,7 @@ import SignUp from 'pages/signup';
 import Settings from 'pages/settings';
 import Profile from 'pages/profile';
 import User from 'pages/user';
+import Tests from 'pages/tests';
 import Auth from './auth/Auth';
 
 export const AppContext = createContext(null);
@@ -51,9 +52,8 @@ function App() {
                 </Auth>
               }/>
               <Route path='/profile' element={<Profile title='Profile'/>}/>
-              <Route path='/user' element={
-                <User title='User'/>
-              }/>
+              <Route path='/user' element={<User title='User'/>}/>
+              <Route path='/tests' element={<Tests title='Tests'/>}/>
             </Route>
           </Routes>
         </ThemeProvider>

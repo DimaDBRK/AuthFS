@@ -139,11 +139,25 @@ Ref: backed/tests
 
 >Frontend
 - 2 tests
+  
+>Use from frontend:
+- Navigate to the "Test page" within the web application.
+- Locate the corresponding button that initiates the test case.
+- Click the button to start the test case execution on the server side.
+- Allow the test case to run until it completes.
 
-How to start:
+Once the test case has finished running:
+
+-Look for a "SHOW REPORT" button or link on the page.
+- Click the "SHOW REPORT" button to access the test report.
+
+The test report should provide details about the test case execution, including any pass/fail results, error messages, and other relevant information. This information can help in evaluating the success and performance of the test case.
+![Tests](other/Tests.jpg)
+
+>How to start py files:
 1. in python virtual inv go cd dir to tests folder.
 2. run command: (py -m) pytest -v -s --html=report.html test_api.py
-3. Report will be in file: report.html (to open in browser)
+3. Report will be in file: report.html (to open manually in browser)
    
 ![Report](other/Report.jpg)
 

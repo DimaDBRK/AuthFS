@@ -79,6 +79,11 @@ const Navbar = ({
                         Settings
                     </Button>
                 )}  
+                {isLogin && (
+                    <Button  variant="h4" sx={{ my: 2, display: 'block' }} component={Link} to='/tests' > 
+                        Tests
+                    </Button>
+                )}
               
            </FlexBetween>
 

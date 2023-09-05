@@ -1,9 +1,11 @@
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, Response, render_template
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from app.models import User, Organization, OrganizationUser
 import re
+import subprocess
+import shutil
 
 # for not unique name error
 from sqlalchemy.exc import IntegrityError  #  IntegrityError class for email check
@@ -475,3 +477,59 @@ def test():
         print("errors=>", e)
         return jsonify({"msg": "An error occurred"}), 500
 
+# start tests
+@app.route('/run-tests', methods=['POST'])
+def run_tests():
+    tests_dict = {"api": "test_api.py", "front": "test_front.py"}
+    try:
+        data = request.get_json()
+                
+        if 'command' not in data:
+            return jsonify({"msg": "Wrong request"}), 400
+        
+        print("command=>", data['command'])
+        if data['command'] not in ['api','front']:
+            return jsonify({"msg": "Wrong command"}), 400
+        
+        # Run Pytest with the specified test file and generate an HTML report
+        subprocess.run(['pytest', f'./tests/{tests_dict[data["command"]]}', '--html=./app/templates/report.html'])
+
+        # modify link to css in html report file
+        with open('./app/templates/report.html', 'r') as file:
+            html_content = file.read()
+
+        # Define the pattern to search for
+        pattern = r'<link [^>]*href="[^"]*"[^>]*>'
+
+        # Define the replacement <link> tag
+        replacement_link = '<link href="{{ url_for(\'static\', filename=\'styles/style.css\') }}" rel="stylesheet" type="text/css"/>'
+
+        # Use regular expressions to search and replace
+        html_content = re.sub(pattern, replacement_link, html_content)
+
+        # Write the modified HTML content back to the file
+        with open('./app/templates/report.html', 'w') as file:
+            file.write(html_content)
+        
+        # move css file
+        # Define the source and destination paths
+        source_path = './app/templates/assets/style.css'
+        destination_path = './app/static/styles/style.css'
+
+        try:
+            # Move the file from the source folder to the destination folder
+            shutil.move(source_path, destination_path)
+            print(f"File moved")
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            
+        return jsonify({"msg": "Report OK"}), 200
+
+    except Exception as e:
+        print("errors=>", e)
+        return jsonify({"msg": "An error occurred"}), 500
+    
+
+@app.route('/report')
+def serve_report():
+    return render_template('report.html')

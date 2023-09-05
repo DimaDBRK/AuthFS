@@ -22,23 +22,26 @@ const Settings = (props) => {
   const { isLogin, setIsLogin, userinfo, setUserInfo, token, setToken } = useContext(AppContext);
     
   const [id, setId] = useState(null);
-    const [usersData, setUsersData] = useState([]);
+  const [usersData, setUsersData] = useState([]);
     
-    const [newOrg, setNewOrg] = useState("");
-    const [isDeleteAlert, setIsDeleteAlert] = useState(false);
-    const [confirmDelete, setConfirmDelete] = useState(false);
-    const [isDeleteButton, setIsDeleteButton] = useState(true);
-    const [isAddNewButton, setIsAddNewButton] = useState(true);
+  const [newOrg, setNewOrg] = useState("");
+  const [isDeleteAlert, setIsDeleteAlert] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [isDeleteButton, setIsDeleteButton] = useState(true);
+  const [isAddNewButton, setIsAddNewButton] = useState(true);
+
+    
+
     //web page title for browser
-    const title = props.title;
-    useEffect(() => {
-      document.title = title;
-    },[]);
+  const title = props.title;
+  useEffect(() => {
+    document.title = title;
+  },[]);
    
     //theme
-    const theme = useTheme();
+  const theme = useTheme();
   
-    const navigate = useNavigate();
+  const navigate = useNavigate();
     
     // get organization list
      useEffect(()=>{
@@ -46,7 +49,7 @@ const Settings = (props) => {
         // console.log('res=>',reports);
       }, [])
       
-    const getOrganizations = async () =>{
+  const getOrganizations = async () =>{
       try {
         const res = await axios.get(`/organizations`);
         console.log('res=>',res.data.organizations);
@@ -154,7 +157,6 @@ const Settings = (props) => {
             setMsg(err.response.data.msg); // to show in the same part
             }
         } else { return}
-   
     }
 
     return(
